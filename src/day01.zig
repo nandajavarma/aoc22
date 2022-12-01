@@ -34,16 +34,16 @@ pub fn partA(numbers: std.ArrayList(usize)) usize {
         } else {
             current_sum = current_sum + val;
         }
-        idx++;
+        idx = idx + 1;
     }
 
     return max_sum;
 }
 
 pub fn partB(numbers: std.ArrayList(usize)) usize {
-    var first: usize = 0
-    var second: usize = 0
-    var third: usize = 0
+    var first: usize = 0;
+    var second: usize = 0;
+    var third: usize = 0;
 
     var current_sum: usize = 0;
     var idx: usize = 0;
@@ -52,13 +52,21 @@ pub fn partB(numbers: std.ArrayList(usize)) usize {
         if (val == 0) {
             if (current_sum > third) {
                 if (current_sum > second) {
-                    if (current_sum > third) {
-                        
+                    if (current_sum > first) {
+                        third = second;
+                        second = first;
+                        first = current_sum;
+                    } else {
+                        third = second;
+                        second = current_sum;
                     }
+                } else {
+                    third = current_sum;
                 }
             }
 
             current_sum = 0;
+
         } else {
             current_sum = current_sum + val;
         }
@@ -66,7 +74,11 @@ pub fn partB(numbers: std.ArrayList(usize)) usize {
         idx = idx + 1;
     }
 
-    return max_sum;
+
+    std.debug.print("first is, {d}!\n", .{first});
+    std.debug.print("first is, {d}!\n", .{second});
+    std.debug.print("first is, {d}!\n", .{third});
+    return first + second + third;
 }
         
 
@@ -78,8 +90,10 @@ pub fn main(allocator: std.mem.Allocator) !void {
     const numbers = try readNumsFromFile(allocator, content);
 
     const ansA = partA(numbers);
+    const ansB = partB(numbers);
 
     std.debug.print("Part A answer is, {d}!\n", .{ansA});
+    std.debug.print("Part B answer is, {d}!\n", .{ansB});
 }
 
 pub fn readFile(allocator: std.mem.Allocator, filePath: []const u8) ![]const u8 {
@@ -111,4 +125,15 @@ test "most calories an elf is carrying is 24000 for partA" {
     const numbers = try readNumsFromFile(allocator, input);
     
     try expect(partA(numbers) == 24000 );
+}
+
+test "top 3 elves should carry 45000 calories in partB" {
+    const allocator = std.heap.page_allocator;
+
+    const numbers = try readNumsFromFile(allocator, input);
+    
+    const res = partB(numbers);
+    
+    std.debug.print("Part B answer is, {d}!\n", .{res});
+    try expect(partB(numbers) == 41000 );
 }
